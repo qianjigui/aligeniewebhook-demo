@@ -1,15 +1,18 @@
 package main
 
 import (
+	//"io/ioutil"
 	"flag"
 	"html/template"
 	"log"
 	"net/http"
+	"net/http/httputil"
 )
 
 var addr = flag.String("addr", ":1718", "http service address") // Q=17, R=18
 
 var templ = template.Must(template.New("qr").Parse(templateStr))
+var verifytmp = template.Must(template.New("qr").Parse(templateStrVerify))
 
 func main() {
 
@@ -22,6 +25,7 @@ func main() {
 
 	flag.Parse()
 	http.Handle("/", http.HandlerFunc(QR))
+	http.Handle("/aligenie/4b94f01be364f47c025eecf9b80d5bfe.txt", http.HandlerFunc(verify))
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -29,28 +33,57 @@ func main() {
 }
 
 func QR(w http.ResponseWriter, req *http.Request) {
+	log.Println(req)
+	r , _ := httputil.DumpRequest(req,true)
+	log.Println(string(r))
 	templ.Execute(w, req.FormValue("s"))
 }
+func verify(w http.ResponseWriter, req *http.Request) {
+	log.Println(req)
+	r , _ := httputil.DumpRequest(req,true)
+	log.Println(string(r))
+	verifytmp.Execute(w, req.FormValue("s"))
+
+}
+const templateStrVerify = `Jfc4Z4Ur15JwUBuvUQD5wg7Nu8+l+HscqYlfofbyJdb07RwiSRq7c8M8Z8Z6w7c+`
 
 const templateStr = `
-<html>
-<head>
-<title>QR Link Generator</title>
-</head>
-<body>
-{{if .}}
-<img src="http://chart.apis.google.com/chart?chs=300x300&cht=qr&choe=UTF-8&chl={{.}}" />
-<br>
-{{.}}
-<br>
-<br>
-{{end}}
-<form action="/" name=f method="GET"><input maxLength=1024 size=70
-name=s value="" title="Text to QR Encode"><input type=submit value="Show QR" name=qr>
-</form>
-</body>
+{
+    "returnCode": "0",
+    "returnErrorSolution": "",
+    "returnMessage": "",
+    "returnValue": {
+    "reply": "欢迎测试设备控制技能",
+    "resultType": "RESULT",
+    "properties": {
+    "code": "1234"
+    },
+    "actions": [
+    {
+        "name": "dataResult",
+        "nluReplyText": "你是要打开台灯不",
+        "parameters": {
+            "bizInfo":{
+                "operate": "true",
+                "oterh": "yes"
+            }
+        }
+    }
+    ],
+                //"properties": {},
+                "sessionEntries": {
+                    "CONTEXT_ENTRY_KEY_HAS_NLU_GA_PUBLIC_DOMAIN ": {
+                        "timeToLive": 0,
+                        "liveTime": 0,
+                        "timeStamp": 1491889193833,
+                        "value": "false"
+                    }
+                },
+                "executeCode": "SUCCESS",
+                "msgInfo": "hello world"
+        }
+}
 
-</html>
 `
 
 func QQQ() string {
