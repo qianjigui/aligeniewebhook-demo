@@ -53,37 +53,11 @@ const templateStr = `
     "returnErrorSolution": "",
     "returnMessage": "",
     "returnValue": {
-    "reply": "欢迎测试设备控制技能",
-    "resultType": "RESULT",
-    "properties": {
-    "code": "1234"
-    },
-    "actions": [
-    {
-        "name": "dataResult",
-        "nluReplyText": "你是要打开台灯不",
-        "parameters": {
-            "bizInfo":{
-                "operate": "true",
-                "oterh": "yes"
-            }
-        }
+        "reply": "欢迎测试设备控制技能",
+        "resultType": "RESULT",
+        "properties": { "actions": "[{\"name\":\"dataResult\",\"nluReplyText\":\"你是要打开台灯不\",\"parameters\":{\"bizInfo\":\"{ \\\"operate\\\": \\\"true\\\", \\\"oterh\\\": \\\"yes\\\" }\"}}]" }
     }
-    ],
-                //"properties": {},
-                "sessionEntries": {
-                    "CONTEXT_ENTRY_KEY_HAS_NLU_GA_PUBLIC_DOMAIN ": {
-                        "timeToLive": 0,
-                        "liveTime": 0,
-                        "timeStamp": 1491889193833,
-                        "value": "false"
-                    }
-                },
-                "executeCode": "SUCCESS",
-                "msgInfo": "hello world"
-        }
 }
-
 `
 
 func QQQ() string {
