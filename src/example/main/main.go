@@ -1,18 +1,20 @@
 package main
 
 import (
-	//"io/ioutil"
+    "reflect"
+	"io/ioutil"
 	"flag"
 	"html/template"
 	"log"
 	"net/http"
 	"net/http/httputil"
+    "encoding/json"
 )
 
 var addr = flag.String("addr", ":1718", "http service address") // Q=17, R=18
 
 var templ = template.Must(template.New("qr").Parse(templateStr))
-var verifytmp = template.Must(template.New("qr").Parse(templateStrVerify))
+var verifytmp = template.Must(template.New("verify").Parse(templateStrVerify))
 
 func main() {
 
@@ -32,11 +34,49 @@ func main() {
 	}
 }
 
+type Message struct {
+    Slots []map[string]interface{} `slotEntities`
+}
+
+type TData struct {
+    StandardValue string
+    OriginalValue string
+}
+
 func QR(w http.ResponseWriter, req *http.Request) {
 	log.Println(req)
 	r , _ := httputil.DumpRequest(req,true)
 	log.Println(string(r))
-	templ.Execute(w, req.FormValue("s"))
+    var f map[string]interface{}
+    var s string
+    var o string
+    body,_ := ioutil.ReadAll(req.Body)
+    err := json.Unmarshal(body, &f)
+    log.Println(err)
+    for k := range f{
+        if k=="slotEntities" {
+            log.Println(reflect.TypeOf(f[k]))
+            b, ok := f[k].([]interface{})
+            if ok {
+                b2, ok := b[0].(map[string]interface{})
+                if ok {
+                    log.Println(reflect.TypeOf(b2["intentParameterName"]))
+                    log.Println(b2["intentParameterName"])
+                    s = b2["standardValue"].(string)
+                    o = b2["originalValue"].(string)
+                    log.Println(s)
+                    log.Println(o)
+                }
+            }
+        }
+    }
+    //log.Println(f.Slots[0]["intentParameterName"])
+	//templ.Execute(w, req.FormValue("s"))
+    var td TData
+    td.StandardValue = s
+    td.OriginalValue = o
+    t, err := template.New("qr").Parse(templateStr)
+    err = t.Execute(w, &td)
 }
 func verify(w http.ResponseWriter, req *http.Request) {
 	log.Println(req)
@@ -53,13 +93,9 @@ const templateStr = `
     "returnErrorSolution": "",
     "returnMessage": "",
     "returnValue": {
-        "reply": "欢迎测试设备控制技能",
+        "reply": "欢迎测试设备控制技能,你是要{{.OriginalValue}}台灯",
         "resultType": "RESULT",
-        "properties": { "actions": "[{\"name\":\"dataResult\",\"nluReplyText\":\"你是要打开台灯不\",\"parameters\":{\"bizInfo\":\"{ \\\"operate\\\": \\\"true\\\", \\\"oterh\\\": \\\"yes\\\" }\"}}]" }
+        "properties": { "actions": "[{\"name\":\"dataResult\",\"nluReplyText\":\"你是要{{.OriginalValue}}台灯\",\"parameters\":{\"bizInfo\":\"{ \\\"operate\\\": \\\"{{.StandardValue}}\\\", \\\"oterh\\\": \\\"yes\\\" }\"}}]" }
     }
 }
 `
-
-func QQQ() string {
-	return "hello world"
-}
