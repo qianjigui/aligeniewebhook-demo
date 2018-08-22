@@ -26,8 +26,10 @@ func main() {
 	}
 
 	flag.Parse()
-	http.Handle("/", http.HandlerFunc(QR))
+	http.Handle("/multiMode", http.HandlerFunc(QR))
+	http.Handle("/displayTxt", http.HandlerFunc(DisplayTxt))
 	http.Handle("/aligenie/4b94f01be364f47c025eecf9b80d5bfe.txt", http.HandlerFunc(verify))
+    http.Handle("/", http.FileServer(http.Dir("public/")))
 	err := http.ListenAndServe(*addr, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
@@ -41,6 +43,17 @@ type Message struct {
 type TData struct {
     StandardValue string
     OriginalValue string
+}
+
+func DisplayTxt(w http.ResponseWriter, req *http.Request){
+    log.Println(req)
+    r , _ := httputil.DumpRequest(req,true)
+    log.Println(string(r))
+    req.ParseForm()
+    var td TData
+    td.StandardValue = req.Form["txt"][0]
+    t, _ := template.New("displayTxt").Parse(templateDisplayTxtStr)
+    t.Execute(w, &td)
 }
 
 func QR(w http.ResponseWriter, req *http.Request) {
@@ -98,4 +111,19 @@ const templateStr = `
         "properties": { "actions": "[{\"name\":\"dataResult\",\"nluReplyText\":\"你是要{{.OriginalValue}}台灯\",\"parameters\":{\"bizInfo\":\"{ \\\"operate\\\": \\\"{{.StandardValue}}\\\", \\\"oterh\\\": \\\"yes\\\" }\"}}]" }
     }
 }
+`
+
+const templateDisplayTxtStr = `
+<html>
+<head>
+<head>
+<body>
+<center>
+<h2>{{.StandardValue}}</h2>
+<img src="http://47.100.161.97:1718/tmgn.logo.png"/>
+<br/>
+<img src="http://47.100.161.97:1718/TM_10s.gif" width="600" height="600"/>
+</center>
+</body>
+</html>
 `
