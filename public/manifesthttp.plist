@@ -17,13 +17,13 @@
 					<key>kind</key>
 					<string>display-image</string>
 					<key>url</key>
-					<string>http://47.100.161.97:1718/tmgn.logo.png</string>
+					<string>https://github.com/qianjigui/aligeniewebhook-demo/blob/httpsfileserver/public/tmgn.logo.png?raw=true</string>
 				</dict>
 				<dict>
 					<key>kind</key>
 					<string>full-size-image</string>
 					<key>url</key>
-					<string>http://47.100.161.97:1718/tmgn.logo.png</string>
+					<string>https://github.com/qianjigui/aligeniewebhook-demo/blob/httpsfileserver/public/tmgn.logo.png?raw=true</string>
 				</dict>
 			</array>
 			<key>metadata</key>
@@ -35,7 +35,7 @@
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>
-				<string>AGI_Demo</string>
+				<string>RLAudioRecord</string>
 			</dict>
 			<key>thinned-assets</key>
 			<array>
