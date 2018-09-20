@@ -11,7 +11,7 @@ import (
     "encoding/json"
 )
 
-var addr = flag.String("addr", ":1718", "http service address") // Q=17, R=18
+var addr = flag.String("addr", ":1719", "http service address") // Q=17, R=18
 
 var templ = template.Must(template.New("qr").Parse(templateStr))
 var verifytmp = template.Must(template.New("verify").Parse(templateStrVerify))
@@ -116,11 +116,10 @@ const templateStr = `
 const templateDisplayTxtStr = `
 <html>
 <head>
-<head>
+</head>
 <body>
 <center>
 <h2>{{.StandardValue}}</h2>
-<img src="http://47.100.161.97:1718/tmgn.logo.png"/>
 <br/>
 <img src="http://47.100.161.97:1718/TM_10s.gif" width="600" height="600"/>
 </center>
